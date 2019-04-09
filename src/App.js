@@ -24,8 +24,20 @@ class App extends Component {
      const country = event.target.elements.country.value
      const api = await fetch(`http://api.openweathermap.org/data/2.5/weather?q=${city},${country}&appid=2a5220abb62716a87294b78bacbf966e`)
      const data = await api.json()
-    console.log(data)
-    if (city && country) {
+     if ((data.cod !== 200) && (city && country)  ) this.setState({
+       invalid_info : true, 
+       error :'',
+       temperature : '' , 
+        country:'',
+        city : '' ,
+        humidity : '' , 
+        description : '' ,
+    })
+     else this.setState({invalid_info : false})
+     
+    // console.log (data +'datttta','api fff'+ api.headers.ok +'api')
+    // if (city !== data.name.toLowerCase() ) 
+      if ((city && country) && !this.state.invalid_info) {
       this.setState({
         temperature : data.main.temp , 
         country: data.sys.country,
@@ -35,14 +47,15 @@ class App extends Component {
         error : ''
       })
     }
-    else {
+    else if (!city || !country)   {
       this.setState({
         temperature : '' , 
         country:'',
         city : '' ,
         humidity : '' , 
         description : '' ,
-        error : 'please enter data'
+        error : 'please enter data',
+        invalid_info: false
       })
     }
   }
@@ -52,7 +65,10 @@ class App extends Component {
        <div className='form-container'>
        <i class="fas fa-cloud-sun-rain" style={{fontSize : '50px' }}></i>
           <h1>Weather App</h1>
-          <Form getweather={this.getweather}/>
+          <Form 
+                getweather={this.getweather}
+                invalid_info={this.state.invalid_info}
+          />
           <Weather 
               temperature = {this.state.temperature} 
               country= {this.state.country}
@@ -60,6 +76,7 @@ class App extends Component {
               humidity = {this.state.humidity} 
               description = {this.state.description}
               error= {this.state.error}
+              invalid_info={this.state.invalid_info}
           />
        </div>
       </div>
